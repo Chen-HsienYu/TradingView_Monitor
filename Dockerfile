@@ -21,7 +21,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 RUN chmod +x entrypoint.sh
 
 # 開放 80 Port (Railway 預設)
-EXPOSE 80
+EXPOSE 8080
 
 # 啟動！
 CMD ["./entrypoint.sh"]
