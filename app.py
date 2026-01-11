@@ -28,23 +28,23 @@ st.caption("全板塊監控系統 | 訊號來源: TradingView Webhook | 時框: 
 # 2. 定義股票板塊分類
 # ==========================================
 SECTOR_MAP = {
-    "明星科技股": ["TSLA", "NVDA", "AAPL", "AMZN", "META", "NFLX", "ORCL", "PLTR", "MU", "AMD", "AVGO", "TSM", "QCOM", "ADBE", "DIS"],
+    "明星科技股": ["TSLA", "NVDA", "AAPL", "AMZN", "META", "NFLX", "ORCL", "PLTR", "MU", "AMD", "AVGO", "TSM"],
     "英偉達持倉概念": ["NVDA", "APLD", "CRWV", "NBIS", "ARM", "WRD", "RXRX"],
-    "核電": ["SMR", "OKLO", "UUUU", "NEE", "VST", "UEC", "NXE", "DJT", "LEU"],
+    "核電": ["SMR", "OKLO", "UUUU", "NEE", "VST", "NXE", "DJT", "LEU"],
     "量子計算": ["QBTS", "RGTI", "IONQ", "QUBT", "LAES"],
-    "AI應用軟件": ["PLTR", "SOUN", "PATH", "TTD", "PINS", "ZETA", "TEM", "SHOP", "DOCU", "FIG", "RDDT", "SNOW", "MDB"],
-    "特朗普概念": ["TSLA", "MARA", "DJT", "MSTR", "XOM", "CLSK", "RIOT", "COIN", "RUM", "UNH"],
+    "AI應用軟件": ["PLTR", "SOUN", "PATH", "TTD", "PINS", "ZETA", "TEM", "SHOP", "DOCU", "FIG", "RDDT", "MDB"],
+    "特朗普概念": ["TSLA", "MARA", "DJT", "MSTR", "CLSK", "RIOT", "COIN", "RUM"],
     "智能駕駛": ["TSLA", "UBER"],
     "AI晶片": ["INTC", "NVDA", "TSM"],
-    "加密貨幣": ["ASST", "SOFI", "BMNR", "BTBT", "BITF", "MARA", "MSTR", "IREN", "CLSK", "HOOD", "HIVE", "RIOT", "WULF", "CIFR", "GME", "COIN", "CRCL", "SBET", "GLXY", "HUT", "BTDR", "DJT"],
-    "機器人概念": ["TSLA", "MBLY", "PATH", "RR", "SERV", "PDYN"],
+    "加密貨幣": ["ASST", "SOFI", "BMNR", "MARA", "MSTR", "IREN", "CLSK", "HOOD", "HIVE", "RIOT", "WULF", "CIFR", "GME", "COIN", "CRCL", "SBET", "GLXY", "HUT", "DJT"],
+    "機器人概念": ["TSLA", "MBLY", "PATH", "SERV", "PDYN"],
     "無人機概念": ["ONDS", "ACHR", "JOBY", "RCAT", "KTOS", "UMAC", "AVAV"],
     "人工智慧": ["NVDA", "INTC", "SMCI", "NVTS", "AMD", "TSM", "AVGO", "QCOM"],
-    "半導體概念": ["INTC", "NVDA", "MU", "AMD", "AVGO", "LRCX", "TSM", "AMAT", "SMCI", "NVTS"],
+    "半導體概念": ["INTC", "NVDA", "MU", "AMD", "AVGO", "LRCX", "TSM", "SMCI", "NVTS"],
     "太空概念": ["RKLB", "ASTS", "SIDU", "RDW", "PL", "LUNR", "SATS", "VSAT", "DXYZ", "FJET"],
     "稀土": ["CRML", "UAMY", "UUUU", "MP", "USAR", "AREC", "NB", "EOSE"],
-    "鋰礦電池": ["LAC", "QS", "LAR", "ENVX", "SGML", "ALAB"],
-    "存儲概念": ["MU", "SNDK", "WDC", "STX"]
+    "鋰礦電池": ["LAC", "QS", "SGML", "ALAB"],
+    "存儲概念": ["MU", "SNDK", "WDC"]
 }
 
 DATA_FILE = "market_data.json"
