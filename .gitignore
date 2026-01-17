@@ -1,4 +1,4 @@
-# Auth config (contains hashed passwords)
+# Old YAML config (no longer used)
 config.yaml
 
 # Python
@@ -7,3 +7,6 @@ __pycache__/
 
 # Environment
 .env
+
+# Note: users/users.csv is NOT ignored - it needs to be deployed
+# Passwords are hashed with bcrypt so safe to commit

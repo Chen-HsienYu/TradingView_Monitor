@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Admin script for managing users in config.yaml
+Admin script for managing users in users.csv
 Usage:
     python admin.py add <username> <password> <email> <name>
     python admin.py remove <username>
@@ -8,77 +8,74 @@ Usage:
     python admin.py reset <username> <new_password>
 """
 
-import yaml
-import bcrypt
+import csv
 import sys
 import os
 
-CONFIG_FILE = "config.yaml"
+USERS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "users", "users.csv")
 
 
-def load_config():
-    """Load the config file"""
-    if not os.path.exists(CONFIG_FILE):
-        return {
-            "credentials": {"usernames": {}},
-            "cookie": {
-                "name": "mark_trading_auth",
-                "key": "change_this_to_a_random_secret_key",
-                "expiry_days": 30
-            }
-        }
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+def load_users():
+    """Load users from CSV file"""
+    users = {}
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, "r", encoding="utf-8", newline="") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                users[row["username"]] = {
+                    "password": row["password"],
+                    "email": row["email"],
+                    "name": row["name"]
+                }
+    return users
 
 
-def save_config(config):
-    """Save the config file"""
-    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-        yaml.dump(config, f, allow_unicode=True, default_flow_style=False)
-
-
-def hash_password(password: str) -> str:
-    """Hash a password using bcrypt"""
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+def save_users(users):
+    """Save users to CSV file"""
+    os.makedirs(os.path.dirname(USERS_FILE), exist_ok=True)
+    with open(USERS_FILE, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["username", "password", "email", "name"])
+        for username, info in users.items():
+            writer.writerow([username, info["password"], info["email"], info["name"]])
 
 
 def add_user(username: str, password: str, email: str, name: str):
     """Add a new user"""
-    config = load_config()
+    users = load_users()
     
-    if username in config["credentials"]["usernames"]:
+    if username in users:
         print(f"Error: User '{username}' already exists!")
         return False
     
-    config["credentials"]["usernames"][username] = {
+    users[username] = {
+        "password": password,
         "email": email,
-        "name": name,
-        "password": hash_password(password)
+        "name": name
     }
     
-    save_config(config)
+    save_users(users)
     print(f"User '{username}' added successfully!")
     return True
 
 
 def remove_user(username: str):
     """Remove a user"""
-    config = load_config()
+    users = load_users()
     
-    if username not in config["credentials"]["usernames"]:
+    if username not in users:
         print(f"Error: User '{username}' not found!")
         return False
     
-    del config["credentials"]["usernames"][username]
-    save_config(config)
+    del users[username]
+    save_users(users)
     print(f"User '{username}' removed successfully!")
     return True
 
 
 def list_users():
     """List all users"""
-    config = load_config()
-    users = config["credentials"]["usernames"]
+    users = load_users()
     
     if not users:
         print("No users found.")
@@ -93,14 +90,14 @@ def list_users():
 
 def reset_password(username: str, new_password: str):
     """Reset a user's password"""
-    config = load_config()
+    users = load_users()
     
-    if username not in config["credentials"]["usernames"]:
+    if username not in users:
         print(f"Error: User '{username}' not found!")
         return False
     
-    config["credentials"]["usernames"][username]["password"] = hash_password(new_password)
-    save_config(config)
+    users[username]["password"] = new_password
+    save_users(users)
     print(f"Password for '{username}' reset successfully!")
     return True
 

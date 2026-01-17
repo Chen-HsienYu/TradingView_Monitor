@@ -1,10 +1,9 @@
 import streamlit as st
-import streamlit_authenticator as stauth
 import pandas as pd
 import json
 import time
 import os
-import yaml
+import csv
 
 # ==========================================
 # 1. 頁面基礎設定
@@ -22,58 +21,54 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 1.5 Authentication
+# 1.5 Authentication (CSV-based, plain text)
 # ==========================================
-# Get config path relative to this script's location
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CONFIG_FILE = os.path.join(SCRIPT_DIR, "config.yaml")
+USERS_CSV = os.path.join(SCRIPT_DIR, "users", "users.csv")
 
-def load_auth_config():
-    # Priority 1: Environment variables (for Railway/cloud deployment)
-    if os.environ.get("AUTH_USERNAME"):
-        return {
-            "credentials": {
-                "usernames": {
-                    os.environ.get("AUTH_USERNAME"): {
-                        "email": os.environ.get("AUTH_EMAIL", ""),
-                        "name": os.environ.get("AUTH_NAME", "User"),
-                        "password": os.environ.get("AUTH_PASSWORD_HASH")
-                    }
+def load_users_from_csv():
+    """Load users from CSV"""
+    users = {}
+    if os.path.exists(USERS_CSV):
+        with open(USERS_CSV, "r", encoding="utf-8", newline="") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                users[row["username"]] = {
+                    "password": row["password"],
+                    "email": row["email"],
+                    "name": row["name"]
                 }
-            },
-            "cookie": {
-                "name": os.environ.get("AUTH_COOKIE_NAME", "mark_trading_auth"),
-                "key": os.environ.get("AUTH_COOKIE_KEY", "default_key_change_this"),
-                "expiry_days": int(os.environ.get("AUTH_COOKIE_EXPIRY", "30"))
-            }
-        }
-    # Priority 2: Local config.yaml file
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-            return yaml.safe_load(f)
+    return users
+
+def check_login(username, password):
+    """Check if username/password is valid"""
+    users = load_users_from_csv()
+    if username in users and users[username]["password"] == password:
+        return users[username]["name"]
     return None
 
-config = load_auth_config()
+# Initialize session state
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+    st.session_state.username = None
+    st.session_state.name = None
 
-if config is None:
-    st.error("Authentication config not found. Set AUTH_* environment variables or create config.yaml")
-    st.stop()
-
-authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days']
-)
-
-# Login widget
-authenticator.login()
-
-if st.session_state["authentication_status"] is False:
-    st.error("帳號或密碼錯誤")
-    st.stop()
-elif st.session_state["authentication_status"] is None:
-    st.warning("請輸入帳號密碼登入")
+# Login form
+if not st.session_state.authenticated:
+    st.title("Login")
+    
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    
+    if st.button("Login"):
+        name = check_login(username, password)
+        if name:
+            st.session_state.authenticated = True
+            st.session_state.username = username
+            st.session_state.name = name
+            st.rerun()
+        else:
+            st.error("帳號或密碼錯誤")
     st.stop()
 
 # ==========================================
@@ -83,8 +78,12 @@ st.title("Mark 美股智能戰情室")
 
 # Logout button in sidebar
 with st.sidebar:
-    st.write(f"歡迎, **{st.session_state['name']}**")
-    authenticator.logout("登出", "sidebar")
+    st.write(f"歡迎, **{st.session_state.name}**")
+    if st.button("登出"):
+        st.session_state.authenticated = False
+        st.session_state.username = None
+        st.session_state.name = None
+        st.rerun()
 
 # ==========================================
 # 2. 定義股票板塊分類
