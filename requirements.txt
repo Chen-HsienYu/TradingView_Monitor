@@ -3,3 +3,6 @@ streamlit
 pandas
 pytz
 watchdog
+streamlit-authenticator
+pyyaml
+bcrypt

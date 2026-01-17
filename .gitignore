@@ -1,0 +1,9 @@
+# Auth config (contains hashed passwords)
+config.yaml
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env

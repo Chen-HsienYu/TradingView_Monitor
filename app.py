@@ -1,13 +1,14 @@
 import streamlit as st
+import streamlit_authenticator as stauth
 import pandas as pd
 import json
 import time
 import os
+import yaml
 
 # ==========================================
 # 1. 頁面基礎設定
 # ==========================================
-# 移除 page_icon 參數
 st.set_page_config(page_title="Mark 美股智能戰情室", layout="wide")
 
 # CSS 美化
@@ -20,8 +21,49 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 標題移除 Emoji
+# ==========================================
+# 1.5 Authentication
+# ==========================================
+CONFIG_FILE = "config.yaml"
+
+def load_auth_config():
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f)
+    return None
+
+config = load_auth_config()
+
+if config is None:
+    st.error("Authentication config not found. Please create config.yaml")
+    st.stop()
+
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days']
+)
+
+# Login widget
+authenticator.login()
+
+if st.session_state["authentication_status"] is False:
+    st.error("帳號或密碼錯誤")
+    st.stop()
+elif st.session_state["authentication_status"] is None:
+    st.warning("請輸入帳號密碼登入")
+    st.stop()
+
+# ==========================================
+# Authenticated content below
+# ==========================================
 st.title("Mark 美股智能戰情室")
+
+# Logout button in sidebar
+with st.sidebar:
+    st.write(f"歡迎, **{st.session_state['name']}**")
+    authenticator.logout("登出", "sidebar")
 
 # ==========================================
 # 2. 定義股票板塊分類
