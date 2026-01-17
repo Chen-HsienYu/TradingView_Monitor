@@ -22,7 +22,6 @@ st.markdown("""
 
 # 標題移除 Emoji
 st.title("Mark 美股智能戰情室")
-st.caption("全板塊監控系統 | 訊號來源: TradingView Webhook | 時框: 15m/30m/4h/1D")
 
 # ==========================================
 # 2. 定義股票板塊分類
@@ -91,7 +90,6 @@ while True:
                 
                 row = {
                     "商品": ticker,
-                    "現價": f"{stock_info.get('price', '-')}",
                     "15m": stock_info.get('15m', '-'),
                     "30m": stock_info.get('30m', '-'),
                     "4h": stock_info.get('4h', '-'),
@@ -107,7 +105,7 @@ while True:
                 df = pd.DataFrame(sector_rows)
                 
                 # 強制欄位順序
-                cols = ["商品", "現價", "15m", "30m", "4h", "1d"]
+                cols = ["商品", "15m", "30m", "4h", "1d"]
                 df = df[cols]
 
                 # 渲染表格
@@ -117,7 +115,6 @@ while True:
                     use_container_width=True,
                     column_config={
                         "商品": st.column_config.TextColumn("商品", width="small"),
-                        "現價": st.column_config.TextColumn("現價", width="small"),
                         "15m": st.column_config.TextColumn("15m", width="medium"),
                         "30m": st.column_config.TextColumn("30m", width="medium"),
                         "4h": st.column_config.TextColumn("4h", width="medium"),
