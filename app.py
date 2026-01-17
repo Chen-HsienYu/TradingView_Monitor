@@ -29,6 +29,25 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.join(SCRIPT_DIR, "config.yaml")
 
 def load_auth_config():
+    # Priority 1: Environment variables (for Railway/cloud deployment)
+    if os.environ.get("AUTH_USERNAME"):
+        return {
+            "credentials": {
+                "usernames": {
+                    os.environ.get("AUTH_USERNAME"): {
+                        "email": os.environ.get("AUTH_EMAIL", ""),
+                        "name": os.environ.get("AUTH_NAME", "User"),
+                        "password": os.environ.get("AUTH_PASSWORD_HASH")
+                    }
+                }
+            },
+            "cookie": {
+                "name": os.environ.get("AUTH_COOKIE_NAME", "mark_trading_auth"),
+                "key": os.environ.get("AUTH_COOKIE_KEY", "default_key_change_this"),
+                "expiry_days": int(os.environ.get("AUTH_COOKIE_EXPIRY", "30"))
+            }
+        }
+    # Priority 2: Local config.yaml file
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
@@ -37,7 +56,7 @@ def load_auth_config():
 config = load_auth_config()
 
 if config is None:
-    st.error("Authentication config not found. Please create config.yaml")
+    st.error("Authentication config not found. Set AUTH_* environment variables or create config.yaml")
     st.stop()
 
 authenticator = stauth.Authenticate(
