@@ -24,7 +24,9 @@ st.markdown("""
 # ==========================================
 # 1.5 Authentication
 # ==========================================
-CONFIG_FILE = "config.yaml"
+# Get config path relative to this script's location
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_FILE = os.path.join(SCRIPT_DIR, "config.yaml")
 
 def load_auth_config():
     if os.path.exists(CONFIG_FILE):
@@ -88,7 +90,7 @@ SECTOR_MAP = {
     "存儲概念": ["MU", "SNDK", "WDC"]
 }
 
-DATA_FILE = "market_data.json"
+DATA_FILE = os.path.join(SCRIPT_DIR, "market_data.json")
 
 # ==========================================
 # 3. 輔助函數
